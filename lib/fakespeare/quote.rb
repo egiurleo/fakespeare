@@ -15,7 +15,7 @@ module Fakespeare
       return self unless @text.include?(word)
       return self if word.empty? || replacement.empty?
 
-      Quote.new(@text.gsub(word, replacement))
+      Quote.new(@text.gsub(/\b#{Regexp.quote(word)}\b/, replacement))
     end
 
     def replace_many(words, replacements)
