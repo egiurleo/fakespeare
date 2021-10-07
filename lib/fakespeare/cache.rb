@@ -9,7 +9,7 @@ module Fakespeare
     end
 
     def self.get
-      cache_table.empty? ? nil : cache_table.sample
+      cache_table.empty? ? nil : cache_table.keys.sample
     end
 
     private

@@ -67,5 +67,35 @@ RSpec.describe Fakespeare do
         end
       end
     end
+
+    context 'when Shakespeare::Client errors, succeeds then errors' do
+      before do
+        @times_called = 0
+
+        allow(shakespeare_client).to receive(:generate_quote) do
+          if @times_called == 1
+            raise(Fakespeare::Shakespeare::Error, 'Error fetching Shakespeare quote')
+          end
+
+          @times_called += 1
+          'Tempt not a desperate man.'
+        end
+
+        allow(Fakespeare::Cache).to receive(:get).and_call_original
+        allow(Fakespeare::Cache).to receive(:set).and_call_original
+      end
+
+      it 'uses the cache' do
+        described_class.generate_quote
+
+        expect(Fakespeare::Cache).to have_received(:set).with('Tempt not a desperate man.')
+        expect(Fakespeare::Cache).not_to have_received(:get)
+
+        result = described_class.generate_quote
+
+        expect(result).to eq('Tempt not a desperate gem.')
+        expect(Fakespeare::Cache).to have_received(:get)
+      end
+    end
   end
 end
